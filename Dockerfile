@@ -1,4 +1,5 @@
-FROM python:3.13.3-slim-bookworm AS builder
+
+FROM python:3.13-slim-trixie AS builder
 
 WORKDIR /build
 
@@ -7,15 +8,19 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 
-FROM python:3.13.3-slim-bookworm AS runtime
+FROM python:3.13-slim-trixie AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY --from=builder /install /usr/local
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
+COPY --from=builder /install /usr/local
 COPY src ./src
 COPY model.joblib .
 
