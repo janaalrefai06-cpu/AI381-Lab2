@@ -1,4 +1,5 @@
-﻿name: AI381 Lab 2 CI
+﻿
+name: AI381 Lab 2 CI
 
 on:
   pull_request:
@@ -31,7 +32,7 @@ jobs:
       - name: Run Ruff
         run: ruff check src tests
 
-       - name: Run tests
+      - name: Run tests
         env:
           PYTHONPATH: .
         run: pytest -q
@@ -48,8 +49,7 @@ jobs:
       - name: Build Docker image
         env:
           IMAGE: ghcr.io/${{ github.repository_owner }}/ai381-lab2
-        run: |
-          docker build -t "$IMAGE:$GITHUB_SHA" .
+        run: docker build -t "$IMAGE:$GITHUB_SHA" .
 
       - name: Scan image with Trivy
         env:
@@ -75,3 +75,4 @@ jobs:
           docker push "$IMAGE:$GITHUB_SHA"
           docker inspect --format='{{index .RepoDigests 0}}' \
             "$IMAGE:$GITHUB_SHA" | tee image-digest.txt
+
